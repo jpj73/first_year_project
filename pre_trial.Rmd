@@ -1,0 +1,58 @@
+---
+title: "Pre_trial"
+author: "Juan Pablo Jordán"
+date: "3/17/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+```
+
+Weight lost (initial weight - final weight)
+```{r}
+
+weight <- read_csv("Larval Weight.csv")
+
+#view(weight)
+
+weight_loss <- weight %>% 
+  select(-notes) %>% 
+  filter(!is.na(final_weight)) %>% 
+  transform(final_weight = as.numeric(final_weight)) %>% 
+  mutate(weight_lost = after_24_starve - final_weight) 
+  
+
+ggplot(weight_loss, aes(x = treatment, y = weight_lost)) +
+  geom_boxplot() +
+  geom_point()+
+  labs (x = "Treatment", y = "Weight lost")
+  
+
+```
+
+
+
+Choice assays
+```{r}
+
+choice <- read_csv("Choice assay.csv")
+
+choice_clean <- choice %>% 
+  group_by(Treatment) %>%
+  subset(Choice!="lost") %>% 
+  count(Choice) 
+
+ggplot(arrange(choice_clean, n), aes(x = Treatment, y = n, fill = Choice)) +
+  geom_bar(position="stack", stat="identity")+
+  labs (x = "Treatment", y = "Choice Number")
+
+```
+
+
+
