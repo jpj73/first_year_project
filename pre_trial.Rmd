@@ -54,5 +54,19 @@ ggplot(arrange(choice_clean, n), aes(x = Treatment, y = n, fill = Choice)) +
 
 ```
 
+Weight
+
+```{r}
+weight <- read_csv("pre trial.csv")
+
+weight_clean <- weight %>% 
+  select(-Date, -Latitude, -Longitude, -Notes, -`Scale Length (cm)`, -Time) 
+
+ggplot(weight_clean, aes(x = Treatment, y = Percent_Consumed)) +
+  geom_boxplot() +
+  geom_point()+
+  labs (x = "Treatment", y = "Percent of Leaf Consumed")
+
+```
 
 
