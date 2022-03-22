@@ -17,9 +17,8 @@ library(tidyverse)
 Weight lost (initial weight - final weight)
 ```{r}
 
+#data wrangling
 weight <- read_csv("Larval Weight.csv")
-
-#view(weight)
 
 weight_loss <- weight %>% 
   select(-notes) %>% 
@@ -27,6 +26,12 @@ weight_loss <- weight %>%
   transform(final_weight = as.numeric(final_weight)) %>% 
   mutate(weight_lost = after_24_starve - final_weight) 
   
+#anova model
+
+aov_1 <- aov(weight_lost ~ treatment, data = weight_loss)
+summary(aov_1)
+
+#Visualization
 
 ggplot(weight_loss, aes(x = treatment, y = weight_lost)) +
   geom_boxplot() +
@@ -40,7 +45,7 @@ ggplot(weight_loss, aes(x = treatment, y = weight_lost)) +
 
 Choice assays
 ```{r}
-
+#data wrangling
 choice <- read_csv("Choice assay.csv")
 
 choice_clean <- choice %>% 
@@ -48,6 +53,9 @@ choice_clean <- choice %>%
   subset(Choice!="lost") %>% 
   count(Choice) 
 
+
+
+#visualization
 ggplot(arrange(choice_clean, n), aes(x = Treatment, y = n, fill = Choice)) +
   geom_bar(position="stack", stat="identity")+
   labs (x = "Treatment", y = "Choice Number")
@@ -57,11 +65,18 @@ ggplot(arrange(choice_clean, n), aes(x = Treatment, y = n, fill = Choice)) +
 Weight
 
 ```{r}
+
+#data wrangling
 weight <- read_csv("pre trial.csv")
 
 weight_clean <- weight %>% 
   select(-Date, -Latitude, -Longitude, -Notes, -`Scale Length (cm)`, -Time) 
 
+#model
+aov_2 <- aov(Percent_Consumed ~ Treatment, data = weight_clean)
+summary(aov_2)
+
+#visualization
 ggplot(weight_clean, aes(x = Treatment, y = Percent_Consumed)) +
   geom_boxplot() +
   geom_point()+
