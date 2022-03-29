@@ -72,6 +72,10 @@ weight <- read_csv("pre trial.csv")
 weight_clean <- weight %>% 
   select(-Date, -Latitude, -Longitude, -Notes, -`Scale Length (cm)`, -Time) 
 
+weight_ttest <- weight %>% 
+  select(-Date, -Latitude, -Longitude, -Notes, -`Scale Length (cm)`, -Time)
+  
+
 #model
 aov_2 <- aov(Percent_Consumed ~ Treatment, data = weight_clean)
 summary(aov_2)
