@@ -76,6 +76,8 @@ weight_clean <- weight %>%
 aov_2 <- aov(Percent_Consumed ~ Treatment, data = weight_clean)
 summary(aov_2)
 
+#aov_3 <- aov(Percent_Consumed ~ Treatment$Alfala, data = weight_clean)
+
 #visualization
 ggplot(weight_clean, aes(x = Treatment, y = Percent_Consumed)) +
   geom_boxplot() +
