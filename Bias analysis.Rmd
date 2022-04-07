@@ -1,0 +1,38 @@
+---
+title: "Biass assestment"
+author: "Juan Pablo Jordán"
+date: "3/28/2022"
+output: html_document
+---
+
+Load packages
+
+```{r}
+
+library(tidyverse)
+
+```
+
+First bias visualization
+```{r}
+bias <- read_csv("Silvopasture_Database (1).csv")
+
+
+#view(bias)
+
+bias %>% 
+  mutate(desicion = ifelse(Location == "-", "excluded", "included")) %>% 
+  group_by(Reviewer) %>% 
+  count(desicion) %>% 
+  ggplot(aes(x = Reviewer, y = n, fill = desicion, label = n)) +
+  geom_bar(stat="identity", color = "black") +
+  scale_fill_brewer() +
+  labs(y = "Number of Papers") +
+  geom_text(size = 3, position = position_stack(vjust = 0.5))
+
+count<-matrix(c(453,239,339,260),nrow=2)
+chisq.test(count)
+
+
+```
+
