@@ -1,0 +1,181 @@
+number,initial_weight,treatment,experiment,final_weight,status,Total_Leaf_Area,Consumed_Leaf_Area ,Percent_Consumed
+1,0.0074,Alfalfa,intercropping,0.0076,alive,1.53,0.072,4.689
+2,0.0044,Alfalfa,intercropping,0.0043,alive,1.674,0.07,4.169
+3,0.0069,Alfalfa,intercropping,0.0056,alive,1.789,0.003,0.162
+4,0.0044,Alfalfa,intercropping,0.0043,alive,1.715,0.302,17.604
+5,0.0041,Alfalfa,intercropping,0.0039,dead,1.718,0.031,1.78
+6,0.0049,Alfalfa,intercropping,0.0068,alive,1.756,0.408,23.21
+7,0.0041,Alfalfa,intercropping,0.0034,alive,1.726,0.018,1.025
+8,0.0065,Alfalfa,intercropping,0.0068,alive,1.741,0.21,12.051
+9,0.006,Alfalfa,intercropping,0.0114,alive,1.698,0.789,46.479
+10,0.0035,Alfalfa,intercropping,0.0032,alive,1.695,0.137,8.109
+11,0.0038,Alfalfa,intercropping,0.0025,alive,1.716,0.005,0.287
+12,0.0056,Alfalfa,intercropping,0.0053,alive,1.756,0.027,1.565
+13,0.0048,Alfalfa,intercropping,0.0051,alive,1.744,0.029,1.668
+14,0.006,Alfalfa,intercropping,0.00137,alive,1.72,1.121,65.193
+15,0.0033,Alfalfa,intercropping,0.0034,alive,1.632,0.031,1.912
+16,0.0047,Alfalfa,intercropping,0.0058,alive,1.711,0.202,11.779
+17,0.0039,Alfalfa,intercropping,0.0029,alive,1.817,0.02,1.101
+18,0.0057,Alfalfa,intercropping,0.0051,alive,1.773,0.045,2.55
+19,0.0047,Alfalfa,intercropping,0.0047,alive,1.742,0.236,13.574
+20,0.006,Alfalfa,intercropping,0.0083,alive,1.717,0.289,16.823
+21,0.0052,Desmodiun,intercropping,0.0048,alive,1.702,0.013,0.771
+22,0.0046,Desmodiun,intercropping,0.0049,alive,1.664,0.011,0.637
+23,0.0067,Desmodiun,intercropping,0.0058,alive,1.673,0.007,0.419
+24,0.0026,Desmodiun,intercropping,0.0028,alive,1.703,0.029,1.674
+25,0.0055,Desmodiun,intercropping,0.0072,alive,1.686,0.068,4.014
+26,0.0025,Desmodiun,intercropping,0.0022,alive,1.694,0.008,0.452
+27,0.0057,Desmodiun,intercropping,0.0051,dead,1.719,0.176,10.22
+28,0.0046,Desmodiun,intercropping,0.0037,alive,1.711,0.086,5.02
+29,0.0078,Desmodiun,intercropping,0.0073,alive,1.72,0.119,6.933
+30,0.007,Desmodiun,intercropping,0.009,alive,1.665,0.377,22.653
+31,0.0056,Desmodiun,intercropping,0.0118,alive,1.671,1.671,100
+32,0.0042,Desmodiun,intercropping,0.0031,alive,1.652,0.063,3.822
+33,0.0078,Desmodiun,intercropping,0.0068,alive,1.79,0.297,16.582
+34,0.0035,Desmodiun,intercropping,0.0036,alive,1.672,0.076,4.544
+35,0.0054,Desmodiun,intercropping,0.0111,alive,1.791,1.791,100
+36,0.002,Desmodiun,intercropping,0.0019,dead,1.744,0.062,3.532
+37,0.0076,Desmodiun,intercropping,0.0073,alive,1.678,0.08,4.79
+38,0.0046,Desmodiun,intercropping,0.0032,dead,1.681,0.014,0.811
+39,0.0085,Desmodiun,intercropping,0.0065,dead,1.667,0.03,1.805
+40,0.0032,Desmodiun,intercropping,0.0025,dead,1.708,0.156,9.134
+41,0.004,Red Clover,intercropping,0.0034,dead,1.723,0.025,1.475
+42,0.0037,Red Clover,intercropping,0.0035,dead,1.743,0.036,2.046
+43,0.0021,Red Clover,intercropping,0.0057,alive,1.28,1.28,100
+44,0.0031,Red Clover,intercropping,0.0024,dead,1.721,0.089,5.16
+45,0.0034,Red Clover,intercropping,0.0025,dead,1.706,0.071,4.137
+46,0.009,Red Clover,intercropping,0.009,alive,1.676,0.025,1.502
+47,0.0037,Red Clover,intercropping,0.0017,dead,1.681,0.102,6.057
+48,0.0045,Red Clover,intercropping,0.003,alive,1.707,0.017,1.014
+49,0.0026,Red Clover,intercropping,0.0024,dead,1.664,0.05,3.013
+50,0.0042,Red Clover,intercropping,0.003,alive,1.723,0.152,8.816
+51,0.0044,Red Clover,intercropping,0.0035,dead,1.68,0.021,1.273
+52,0.0026,Red Clover,intercropping,0.002,dead,1.703,0.015,0.895
+53,0.0024,Red Clover,intercropping,0.0022,alive,1.661,0.041,2.485
+54,0.0039,Red Clover,intercropping,0.0031,alive,1.729,0.071,4.103
+55,0.003,Red Clover,intercropping,0.0019,dead,1.73,0.026,1.489
+56,0.0025,Red Clover,intercropping,0.0022,dead,1.739,0.048,2.775
+57,0.0037,Red Clover,intercropping,0.0053,alive,1.837,0.524,28.547
+58,0.0027,Red Clover,intercropping,0.0017,dead,1.722,0.017,0.99
+59,0.0036,Red Clover,intercropping,0.0054,alive,1.739,0.279,16.041
+60,0.0058,Red Clover,intercropping,0.0075,alive,4.978,4.978,100
+61,0.0025,Bean,intercropping,0.0028,dead,1.829,0.204,11.148
+62,0.0043,Bean,intercropping,0.009,alive,1.779,0.033,1.876
+63,0.0043,Bean,intercropping,0.0037,dead,1.716,0.015,0.894
+64,0.003,Bean,intercropping,0.0018,dead,1.708,0.007,0.41
+65,0.0038,Bean,intercropping,0.0028,dead,1.678,0.018,1.052
+66,0.005,Bean,intercropping,0.0049,dead,1.752,0.109,6.222
+67,0.0033,Bean,intercropping,0.0024,dead,1.784,0.064,3.596
+68,0.0038,Bean,intercropping,0.0033,alive,1.713,0.097,5.639
+69,0.005,Bean,intercropping,0.0096,alive,1.679,1.679,100
+70,0.0047,Bean,intercropping,0.0082,alive,1.623,1.623,100
+71,0.0051,Bean,intercropping,0.007,alive,1.705,0.532,31.17
+72,0.0022,Bean,intercropping,0.0023,dead,1.747,0.01,0.56
+73,0.006,Bean,intercropping,0.0024,dead,1.782,0.236,13.273
+74,0.003,Bean,intercropping,0.0027,dead,1.788,0.049,2.752
+75,0.0042,Bean,intercropping,0.0028,dead,1.714,0.052,3.033
+76,0.0065,Bean,intercropping,0.006,dead,1.779,0.09,5.062
+77,0.0056,Bean,intercropping,0.0048,dead,1.738,0.037,2.149
+78,0.0051,Bean,intercropping,0.0045,dead,1.669,0.065,3.918
+79,0.0056,Bean,intercropping,0.0053,dead,1.773,0.014,0.797
+80,0.0038,Bean,intercropping,0.0027,dead,1.754,0.01,0.592
+81,0.0068,Control,intercropping,0.0051,dead,1.722,0.08,4.661
+82,0.0051,Control,intercropping,0.0055,alive,1.709,0.161,9.392
+83,0.0036,Control,intercropping,0.0032,alive,1.768,0.099,5.606
+84,0.0039,Control,intercropping,0.0025,dead,1.714,0.051,2.952
+85,0.004,Control,intercropping,0.0042,alive,1.641,0.21,12.782
+86,0.0042,Control,intercropping,0.0053,alive,1.748,0.503,28.794
+87,0.0046,Control,intercropping,0.00367,dead,1.811,0.112,6.191
+88,0.006,Control,intercropping,0.0056,dead,1.691,0.074,4.374
+89,0.0048,Control,intercropping,0.0035,dead,1.705,0.017,0.991
+90,0.0063,Control,intercropping,0.0094,alive,1.686,1.686,100
+91,0.0028,Control,intercropping,0.0024,alive,1.714,0.08,4.69
+92,0.0038,Control,intercropping,0.0032,alive,1.79,0.154,8.588
+93,0.0045,Control,intercropping,0.005,alive,1.693,0.048,2.856
+94,0.0046,Control,intercropping,0.0078,alive,1.709,0.749,43.814
+95,0.0028,Control,intercropping,0.0037,alive,1.787,0.11,6.135
+96,0.0037,Control,intercropping,0.003,alive,1.78,0.067,3.763
+97,0.0033,Control,intercropping,0.0019,dead,1.739,0.047,2.709
+98,0.0043,Control,intercropping,0.0031,dead,1.745,0.061,3.518
+99,0.0038,Control,intercropping,0.0049,alive,1.797,0.321,17.877
+100,0.0031,Control,intercropping,0.0026,alive,1.743,0.076,4.333
+101,0.0026,Control,plant-soil feedback,,dead,,,
+102,0.003,Control,plant-soil feedback,,dead,,,
+103,0.0029,Control,plant-soil feedback,,dead,,,
+104,0.004,Control,plant-soil feedback,,dead,,,
+105,0.0043,Control,plant-soil feedback,,dead,,,
+106,0.0029,Control,plant-soil feedback,,dead,,,
+107,0.0027,Control,plant-soil feedback,,dead,,,
+108,0.0047,Control,plant-soil feedback,,dead,,,
+109,0.004,Control,plant-soil feedback,,dead,,,
+110,0.0026,Control,plant-soil feedback,,dead,,,
+111,0.0027,Control,plant-soil feedback,,dead,,,
+112,0.0048,Control,plant-soil feedback,,dead,,,
+113,0.0028,Control,plant-soil feedback,,dead,,,
+114,0.0027,Control,plant-soil feedback,,dead,,,
+115,0.0037,Control,plant-soil feedback,,dead,,,
+116,0.004,Control,plant-soil feedback,,dead,,,
+117,0.004,Control,plant-soil feedback,,dead,,,
+118,0.005,Control,plant-soil feedback,,dead,,,
+119,0.0049,Control,plant-soil feedback,,dead,,,
+120,0.0027,Control,plant-soil feedback,,dead,,,
+121,0.0041,Alfalfa,plant-soil feedback,,dead,,,
+122,0.0042,Alfalfa,plant-soil feedback,,dead,,,
+123,0.0046,Alfalfa,plant-soil feedback,,dead,,,
+124,0.003,Alfalfa,plant-soil feedback,,dead,,,
+125,0.0028,Alfalfa,plant-soil feedback,,dead,,,
+126,0.0032,Alfalfa,plant-soil feedback,,dead,,,
+127,0.0076,Alfalfa,plant-soil feedback,,dead,,,
+128,0.0032,Alfalfa,plant-soil feedback,,dead,,,
+129,0.0066,Alfalfa,plant-soil feedback,,dead,,,
+130,0.0029,Alfalfa,plant-soil feedback,,dead,,,
+131,0.0045,Alfalfa,plant-soil feedback,,dead,,,
+132,0.0015,Alfalfa,plant-soil feedback,,dead,,,
+133,0.0055,Alfalfa,plant-soil feedback,,dead,,,
+134,0.0021,Alfalfa,plant-soil feedback,,dead,,,
+135,0.0019,Alfalfa,plant-soil feedback,,dead,,,
+136,0.0049,Alfalfa,plant-soil feedback,,dead,,,
+137,0.0027,Alfalfa,plant-soil feedback,,dead,,,
+138,0.0057,Alfalfa,plant-soil feedback,,dead,,,
+139,0.0057,Alfalfa,plant-soil feedback,,dead,,,
+140,0.003,Alfalfa,plant-soil feedback,,dead,,,
+141,0.0042,Red Clover,plant-soil feedback,,dead,,,
+142,0.0052,Red Clover,plant-soil feedback,,dead,,,
+143,0.0094,Red Clover,plant-soil feedback,0.009,alive,,,
+144,0.0056,Red Clover,plant-soil feedback,,dead,,,
+145,0.0045,Red Clover,plant-soil feedback,,dead,,,
+146,0.0064,Red Clover,plant-soil feedback,,dead,,,
+147,0.0059,Red Clover,plant-soil feedback,,dead,,,
+148,0.0057,Red Clover,plant-soil feedback,,dead,,,
+149,0.0045,Red Clover,plant-soil feedback,,dead,,,
+150,0.0088,Red Clover,plant-soil feedback,,dead,,,
+151,0.0049,Red Clover,plant-soil feedback,,dead,,,
+152,0.0062,Red Clover,plant-soil feedback,,alive,,,
+153,0.0052,Red Clover,plant-soil feedback,0.006,dead,,,
+154,0.0047,Red Clover,plant-soil feedback,,dead,,,
+155,0.0036,Red Clover,plant-soil feedback,,dead,,,
+156,0.0057,Red Clover,plant-soil feedback,,dead,,,
+157,0.0022,Red Clover,plant-soil feedback,,dead,,,
+158,0.005,Red Clover,plant-soil feedback,,dead,,,
+159,0.0035,Red Clover,plant-soil feedback,,dead,,,
+160,0.0045,Red Clover,plant-soil feedback,,dead,,,
+161,0.0045,Bean,plant-soil feedback,,dead,,,
+162,0.004,Bean,plant-soil feedback,,dead,,,
+163,0.0034,Bean,plant-soil feedback,,dead,,,
+164,0.0046,Bean,plant-soil feedback,,dead,,,
+165,0.0074,Bean,plant-soil feedback,,dead,,,
+166,0.0034,Bean,plant-soil feedback,,dead,,,
+167,0.0057,Bean,plant-soil feedback,,dead,,,
+168,0.0037,Bean,plant-soil feedback,,dead,,,
+169,0.0029,Bean,plant-soil feedback,,dead,,,
+170,0.0048,Bean,plant-soil feedback,,dead,,,
+171,0.0051,Bean,plant-soil feedback,,dead,,,
+172,0.0041,Bean,plant-soil feedback,,dead,,,
+173,0.0027,Bean,plant-soil feedback,,dead,,,
+174,0.0063,Bean,plant-soil feedback,,dead,,,
+175,0.0057,Bean,plant-soil feedback,,dead,,,
+176,0.0043,Bean,plant-soil feedback,,dead,,,
+177,0.0025,Bean,plant-soil feedback,,dead,,,
+178,0.0057,Bean,plant-soil feedback,,dead,,,
+179,0.0041,Bean,plant-soil feedback,,dead,,,
+180,0.0033,Bean,plant-soil feedback,,dead,,,

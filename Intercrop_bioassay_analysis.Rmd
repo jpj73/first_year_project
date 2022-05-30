@@ -1,0 +1,140 @@
+---
+title: "Intercropping pot experiment"
+author: "Juan Pablo Jordán"
+date: "3/17/2022"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+```
+
+Weight lost (initial weight - final weight)
+```{r}
+
+#data wrangling
+weight <- read_csv("intercrop_bioassay.csv")
+
+weight_loss <- weight %>% 
+  filter(experiment == "intercropping")%>% 
+  filter(status == "alive") %>% 
+  mutate(weight_difference = initial_weight - final_weight) 
+  
+#anova model
+
+aov_1 <- aov(weight_difference ~ treatment, data = weight_loss)
+par(mfrow=c(2,2))
+plot(aov_1)
+shapiro.test(resid(aov_1))
+summary(aov_1)
+
+#Visualization
+
+ggplot(weight_loss, aes(x = treatment, y = weight_difference)) +
+  geom_boxplot() +
+  geom_point()+
+  labs (x = "Treatment", y = "Weight lost")
+  
+
+```
+
+
+Accumulation efficiency
+
+```{r}
+
+#Data wrangling
+
+accumulation_efficiency <- weight %>% 
+  select(-initial_weight, -Total_Leaf_Area, -Percent_Consumed) %>% 
+  filter(status == "alive") %>% 
+  mutate(accumulation = final_weight/Consumed_Leaf_Area)
+  
+#Data visualization
+
+ggplot(accumulation_efficiency, aes(x = treatment, y = accumulation))+
+  geom_boxplot()+
+  geom_point()+
+  labs (x = "Treatment", y = "Biomass Accumulation Efficiency
+        (mg gained cm2 eaten)")
+
+
+
+```
+
+Choice assays
+```{r}
+#data wrangling
+choice <- read_csv("choice_assay_inter.csv")
+
+choice_clean <- choice %>% 
+  select(-Damage) %>%
+  count(Choice) 
+
+view(choice_clean)
+
+#visualization
+ggplot(data = choice_clean, aes(x = choice, y = n)) +
+  geom_bar(stat="identity") +
+  labs(x = "Treatment", y = "Choice Number")
+
+```
+
+Area consumed
+
+```{r}
+
+#data wrangling
+area <- read_csv("intercrop_bioassay.csv")
+
+area_clean <- area %>% 
+  filter(experiment == "intercropping") %>%
+  filter(Percent_Consumed < 100) %>% 
+  select(-initial_weight, -final_weight, -status) 
+
+#model
+aov_2 <- aov(Percent_Consumed ~ treatment, data = area_clean)
+summary(aov_2)
+
+#aov_3 <- aov(Percent_Consumed ~ Treatment$Alfala, data = weight_clean)
+
+#visualization
+ggplot(area_clean, aes(x = treatment, y = Percent_Consumed)) +
+  geom_boxplot() +
+  geom_point()+
+  labs (x = "Treatment", y = "Percent of Leaf Consumed")
+
+ggplot(area_clean, aes(x = treatment, y = Consumed_Leaf_Area)) +
+  geom_boxplot() +
+  geom_point()+
+  labs (x = "Treatment", y = "Percent of Leaf Consumed")
+
+```
+
+
+Mortality
+```{r}
+mortality <- read_csv("intercrop_bioassay.csv")
+
+#Data Wrangling
+mortality_clean <- mortality %>% 
+  filter(experiment == "intercropping") %>% 
+  select(-initial_weight, -final_weight, -Total_Leaf_Area, -Consumed_Leaf_Area, -Percent_Consumed) %>% 
+  group_by(treatment) %>% 
+  count(status)
+
+
+#Visualizaition 
+ggplot(mortality_clean, aes(x= treatment, y = n, fill = status))+
+  geom_bar(stat="identity", color="black", position=position_dodge())+
+  labs (x = "Treatment", y = "Number of Larvae")
+
+```
+
