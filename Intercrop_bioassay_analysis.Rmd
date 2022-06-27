@@ -56,6 +56,13 @@ accumulation_efficiency <- weight %>%
   select(-initial_weight, -Total_Leaf_Area, -Percent_Consumed) %>% 
   filter(status == "alive") %>% 
   mutate(accumulation = final_weight/Consumed_Leaf_Area)
+
+#statistic
+aov_3 <- aov(accumulation ~ treatment, data = accumulation_efficiency)
+par(mfrow=c(2,2))
+plot(aov_3)
+shapiro.test(resid(aov_3))
+summary(aov_3) 
   
 #Data visualization
 
@@ -102,6 +109,7 @@ area_clean <- area %>%
 #model
 aov_2 <- aov(Percent_Consumed ~ treatment, data = area_clean)
 summary(aov_2)
+plot(aov_2)
 
 #aov_3 <- aov(Percent_Consumed ~ Treatment$Alfala, data = weight_clean)
 
@@ -109,12 +117,12 @@ summary(aov_2)
 ggplot(area_clean, aes(x = treatment, y = Percent_Consumed)) +
   geom_boxplot() +
   geom_point()+
-  labs (x = "Treatment", y = "Percent of Leaf Consumed")
+  labs (x = "Treatment", y = "Percent of Leaf Consumed area")
 
 ggplot(area_clean, aes(x = treatment, y = Consumed_Leaf_Area)) +
   geom_boxplot() +
   geom_point()+
-  labs (x = "Treatment", y = "Percent of Leaf Consumed")
+  labs (x = "Treatment", y = "Consumed Leaf are (cm2)")
 
 ```
 
@@ -130,11 +138,59 @@ mortality_clean <- mortality %>%
   group_by(treatment) %>% 
   count(status)
 
+#chi-square test
+
+alfalfa_vs_control <- matrix(c(19,1,13,7),nrow=2)
+chisq.test(alfalfa_vs_control) #significant
+
+bean_vs_control <- matrix(c(5,15,13,7),nrow=2)
+chisq.test(bean_vs_control) #significant
+
+desm_vs_control <- matrix(c(15,5,13,7),nrow=2)
+chisq.test(desm_vs_control) #non-significant
+
+clover_vs_control <- matrix(c(9,11,13,7),nrow=2)
+chisq.test(clover_vs_control)#non-significant
 
 #Visualizaition 
-ggplot(mortality_clean, aes(x= treatment, y = n, fill = status))+
+ggplot(mortality_clean, aes(x= treatment, y = n, fill = status, label = n))+
   geom_bar(stat="identity", color="black", position=position_dodge())+
+  geom_text(size = 3, aes(label = n), vjust = -1)+
   labs (x = "Treatment", y = "Number of Larvae")
+position = position_stack(vjust = 0.5)
 
+```
+
+Growth data
+```{r}
+growth <- read_csv("Plant_Height_intercropping.csv")
+
+#Separating plant_id information into two different columns when you have no spaces
+growth$plant_sp <- 0
+growth$plant_rep <- 0
+growth$plant_sp <- substr(growth$plant_id, 1, 1)
+growth$plant_rep <- substr(growth$plant_id, 2, 3)
+
+#Replacing the single letters to the full treatment name
+growth$plant_sp <- str_replace_all(growth$plant_sp, c("D" = "Desmodium", "A" = "Alfalfa", "B" = "Bean", "R" = "Red Clover", "M" = "Maize"))
+
+#Convert dates
+growth %>% 
+  mdy()
+#type_convert(date = col_date(format = "%m/%d/%Y"))
+
+#Visualization
+#linear
+ggplot(growth, aes(x = date, y = height_cm, color = plant_sp))+
+  geom_smooth(method = "lm", se = FALSE)+
+  geom_jitter(width = .2)+
+  scale_y_continuous(breaks = seq(0, 50, by = 5))+
+  labs(x = "Date", y = "Plant Height (cm)")
+
+#Boxplot
+ggplot(growth, aes(x = date, y = height_cm, color = plant_sp))+
+  geom_boxplot(aes(fill = plant_sp), alpha = 0.5)+
+  scale_y_continuous(breaks = seq(0, 50, by = 5))+
+  labs(x = "Date", y = "Plant Height (cm)")
 ```
 
