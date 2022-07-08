@@ -21,20 +21,25 @@ Data sets
 ```{r}
 extractions_untidy <- read_sheet("https://docs.google.com/spreadsheets/d/19Lo_R5N8mh6vTorygxevrL2N93anQ4HfmnGE6zohAxI/edit#gid=0")
 
-#Genera tidy
+view(extractions_untidy)
+
+#General tidy
 extractions <- extractions_untidy %>% 
   rename(tissue = Type) %>% 
   select(-Notes,-...7, -...8, -...9, -...10)
 
+view(extractions)
+
 #Separating code information into thre different columns when you have no spaces so that you have one column for the type for the type of experiment, the plant that was intercropped with (experiment), and the replicate number
+
 extractions$experiment <- 0
 extractions$treatment <- 0
 extractions$replicate <- 0
+
 extractions$experiment <- substr(extractions$code, 1, 1)
 extractions$treatment <- substr(extractions$code, 2,2)
 extractions$replicate <- substr(extractions$code, 3,4)
 
-  
 #Replacing the single letters to the full column name
 
 extractions$experiment <- str_replace_all(extractions$experiment, c("P" = "Plant-Soil Feedback", "I" = "Intercropping"))
@@ -43,17 +48,203 @@ extractions$treatment <- str_replace_all(extractions$treatment, c("A" = "Alfalfa
 
 #Subset the extractions data set into four function subsets by experiment and type of tissue
 PSF_leaf <- extractions %>% 
-  filter(experiment == "Plant-Soil Feedback", tissue == "Leaf")
+  filter(experiment == "Plant-Soil Feedback", tissue == "Leaf") %>% 
+  group_by(treatment) %>% 
+  count(treatment)
 
 PSF_root <- extractions %>% 
-  filter(experiment == "Plant-Soil Feedback", tissue == "Root")
+  filter(experiment == "Plant-Soil Feedback", tissue == "Root") %>% 
+  group_by(treatment) %>% 
+  count(treatment)
 
 
 Inter_leaf <- extractions %>% 
-  filter(experiment == "Intercropping", tissue == "Leaf")
+  filter(experiment == "Intercropping", tissue == "Leaf")%>% 
+  group_by(treatment) %>% 
+  count(treatment)
 
 Inter_root <- extractions %>% 
-  filter(experiment == "Intercropping", tissue == "Root")
+  filter(experiment == "Intercropping", tissue == "Root")%>% 
+  group_by(treatment) %>% 
+  count(treatment)
 
 ```
 
+Loading data en installing the necesary packages
+
+```{r}
+
+#Dealing with issues on the download of chromatographer
+#install.packages("devtools")
+
+#devtools::install_github("https://github.com/ethanbass/chromatographR/")
+
+#install.packages("remotes") this packages has a install_github command, its an alterantive to the devtools. 
+
+#remotes::install_github("https://github.com/ethanbass/chromatographR/")
+
+#remotes::install_github("https://github.com/ethanbass/chromConverter/")
+
+#Manuualy adding the pandas and aston packages that are the python parsers when using the package
+#py_install("pandas", pip = TRUE)
+#py_install("aston", pip = TRUE)
+
+
+library(devtools)
+library(chromatographR)
+library(chromConverter)
+
+#load data
+path = "C:\\Users\\juanp\\Desktop\\JuanPablo" #you need to add the path to the folder where you have the data, when copying the path you need to backslashes to make it work. 
+
+
+folders <- list.dirs(path = "C:\\Users\\juanp\\Desktop\\JuanPablo", recursive = FALSE)
+
+dat <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\maize_roots.RDS")
+
+names(dat)
+
+dat_clean <- dat[- 99] #deleting the file that was empty that was holding up the run on the pre-process part. It has not been cleaned from ethans files (but is seems to be working?)
+
+names(dat_clean) #returns the names of what is in the column
+ 
+#dat <- read_chroms(folders, format_in = "chemstation_uv")
+
+#files <- list.files(folders[[1]], pattern = "uv", recursive = TRUE,full.names = TRUE)
+
+#saveRDS(dat, "maize_roots.RDS")
+```
+
+```{r}
+
+#Fixing that the data list was out of order
+dat2 <- lapply(seq_along(dat), function(i){ bdat[[i]][,order(as.numeric(colnames(dat[[i]])))]
+})
+
+tail(rownames(dat[[1]]))
+
+colnames(dat[[1]])
+
+colnames(dat[[2]])
+
+
+```
+
+Pre-processing data
+```{r}
+matplot(dat_clean[[100]][,1], type="l")#plot to inspect the different chromatographs
+
+i=2 # chromatogram number in list of data
+tpoints <- as.numeric(rownames(dat_clean[[i]]))
+lambda='200.0'
+ 
+matplot(x=tpoints, y=dat_clean[[i]][,lambda], type='l', ylab='Abs (mAU)', xlab='Time (min)')
+
+matplot(x=tpoints, y = ptw::baseline.corr(dat_clean[[i]][,lambda],p=.001,lambda=1e5), type='l', add = T, col='blue', lty = 3)
+
+
+# choose dimensions for interpolation
+new.ts <- seq(1,59.9,by=.01) # choose time-points
+new.lambdas <- seq(200, 398, by = 2) # choose wavelengths
+
+rm <- which(sapply(dat_clean, function(x) dim(x)[[1]]) <8990) #excluding Ethans data
+
+dat.pr <- preprocess(dat_clean[-rm], dim1=new.ts, dim2=new.lambdas, parallel=F, p=.001, lambda=1e5)
+
+#saveRDS(dat.pr, "maize_dat.pr.RDS") #saving an rds file for the pre-processed data
+```
+
+Parametric time warping ()
+
+```{r}
+
+##################### Produce the models for time warping ###################
+readRDS()
+
+#"qs package.skeleton" is another R package that saves qs files, which are similar to RDS and are available through the skeleton packages. 
+
+#parametric time warping, dont run this one, it was taking too long
+warping.models <- correct_rt(dat.pr, what = "models", lambdas=c("210"), scale=TRUE) #creates warping models for the samples in the list of data matrices
+
+warp <- correct_rt(chrom_list=dat.pr, models=warping.models, what="corrected.values") #warps each chromatogram according to the corresponding model
+
+#variable penalty dynamic time warping
+install.packages("VPdtw", repos="https://ethanbass.github.io/drat")
+
+warp.vpdtw <- correct_rt(chrom_list=dat.pr, alg="vpdtw", lambda="210", what="corrected.values")
+
+################# compare warped and unwarped chromatograms ########################
+
+par(mfrow=c(2,1)) #breaks the plot windows into two separate
+
+lambdas=c('210','260') #new wavelengths? 
+
+par(mar=c(1,1,1,1)) #allows you to plot the chromatograms without having a space issue
+
+plot.new() #Creates a new plot space in the plot
+
+ts <- as.numeric(rownames(warp.vpdtw[[i]])) #creates a new time series with the names of the rows of the 
+
+plot.window(xlim=c(head(ts,1), tail(ts,1)),ylim=c(0,1000)) #sets up the world coordinate for a graphics window
+
+#
+for (i in 1:length(warp.vpdtw)){
+   matplot(ts, warp.vpdtw[[i]][,lambdas],type='l',add=T)
+ }
+legend("topright", legend="vpdtw", bty = "n")
+ 
+plot.new()
+
+ts <- as.numeric(rownames(dat.pr[[i]]))
+plot.window(xlim=c(head(ts,1),tail(ts,1)),ylim=c(0,1000))
+
+for (i in 1:length(dat.pr)){
+   matplot(ts, dat.pr[[i]][,lambdas],type='l',add=T)
+ }
+legend("topright", legend="raw", bty = "n")
+
+```
+
+
+Peak finding
+
+```{r}
+pks_gauss <- get_peaks(warp.vpdtw, lambdas = c('210','260'), sd.max=40, fit="gaussian")
+
+pks_egh <- get_peaks(warp.vpdtw, lambdas = c('210', '260'), sd.max=40, fit="egh")
+
+#produced a nested list of peaks by looping through the supplied chromatograms. 
+```
+
+
+Peak fitting
+```{r}
+par(mfrow=c(2,1))
+
+plot(pks_gauss, index=1, lambda='210')
+
+plot(pks_egh, index=1, lambda='210')
+
+```
+
+Peak table assembly
+```{r}
+
+pk_tab <- get_peaktable(pks_egh, response = "area")
+
+```
+
+#this are random chuncks of code that were generated when attempting to trouble shoot
+
+add cargo to path before using entab parser
+```{r}
+old_path <- Sys.getenv("PATH")
+Sys.setenv(PATH = paste(old_path, "C:\\Users\\juanp\\.cargo\\bin", sep = ";"))
+
+```
+
+```{r}
+
+remotes::install_github("bovee/entab",subdir = "entab-r")
+
+```

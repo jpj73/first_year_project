@@ -23,7 +23,7 @@ Weight lost (initial weight - final weight)
 weight <- read_csv("intercrop_bioassay.csv")
 
 weight_loss <- weight %>% 
-  filter(experiment == "intercropping")%>% 
+  filter(experiment == "intercropping") %>% 
   filter(status == "alive") %>% 
   mutate(weight_difference = initial_weight - final_weight) 
   
