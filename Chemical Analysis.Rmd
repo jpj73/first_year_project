@@ -14,6 +14,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(googlesheets4)
+library(stringr)
+library(devtools)
+library(chromatographR)
+library(chromConverter)
 
 ```
 
@@ -46,9 +50,11 @@ extractions$experiment <- str_replace_all(extractions$experiment, c("P" = "Plant
 
 extractions$treatment <- str_replace_all(extractions$treatment, c("A" = "Alfalfa", "B" = "Bean", "R" = "Red Clover", "M" = "Control", "D" = "Desmodium"))
 
+view(extractions)
+
 #Subset the extractions data set into four function subsets by experiment and type of tissue
 PSF_leaf <- extractions %>% 
-  filter(experiment == "Plant-Soil Feedback", tissue == "Leaf") %>% 
+  filter(experiment == "Plant-Soil Feedback", tissue == "Leaf") #%>% 
   group_by(treatment) %>% 
   count(treatment)
 
@@ -59,7 +65,7 @@ PSF_root <- extractions %>%
 
 
 Inter_leaf <- extractions %>% 
-  filter(experiment == "Intercropping", tissue == "Leaf")%>% 
+  filter(experiment == "Intercropping", tissue == "Leaf")#%>% 
   group_by(treatment) %>% 
   count(treatment)
 
@@ -68,6 +74,12 @@ Inter_root <- extractions %>%
   group_by(treatment) %>% 
   count(treatment)
 
+#separate the data set into only two to use in the meta data attachment
+leaf <- extractions %>% 
+  filter(tissue == "Leaf")
+
+root <- extractions %>% 
+  filter(tissue == "Root")
 ```
 
 Loading data en installing the necesary packages
@@ -90,29 +102,35 @@ Loading data en installing the necesary packages
 #py_install("aston", pip = TRUE)
 
 
-library(devtools)
-library(chromatographR)
-library(chromConverter)
-
-#load data
-path = "C:\\Users\\juanp\\Desktop\\JuanPablo" #you need to add the path to the folder where you have the data, when copying the path you need to backslashes to make it work. 
+path = "C:\\Users\\juanp\\Desktop\\JuanPabloFinal" #Assigns the data path. You need to add the path to the folder where you have the data, when copying the path you need to backslashes to make it work. 
 
 
-folders <- list.dirs(path = "C:\\Users\\juanp\\Desktop\\JuanPablo", recursive = FALSE)
+folders <- list.dirs(path = "C:\\Users\\juanp\\Desktop\\JuanPabloFInal", recursive = FALSE)#assigns the list of directories that are in that folder to the object folders
 
-dat <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\maize_roots.RDS")
 
-names(dat)
+dat <- read_chroms(folders, format_in = "chemstation_uv")#reads in the data form the previously assigned directories using the read_chroms
 
-dat_clean <- dat[- 99] #deleting the file that was empty that was holding up the run on the pre-process part. It has not been cleaned from ethans files (but is seems to be working?)
+#saveRDS(dat, "maize_chemistry.RDS") #Saved the entire data set that was previously loaded into "dat" to an RDS file, this is a more managables. If done conrrectly, I will only have to run the command below and get the data without reading it from scratch all the time. 
 
-names(dat_clean) #returns the names of what is in the column
- 
-#dat <- read_chroms(folders, format_in = "chemstation_uv")
+###################### Start from here ##############
+
+dat <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\maize_chemistry.RDS") #reads and assigns the saved data files (a files that as been previously processes. )
+
+names(dat) #returns the names of what is in the column
+
+#To subset the data
+dat_leaf <- dat[c(2:48, 146:185)]
+
+dat_roots <- dat[c(1, 49:138)]
+
+names(dat_leaf)
+names(dat_roots)
+
+#dat_clean <- dat[- 99] #deleting the file that was empty that was holding up the run on the pre-process part. It has not been cleaned from ethans files (but is seems to be working?)
+
 
 #files <- list.files(folders[[1]], pattern = "uv", recursive = TRUE,full.names = TRUE)
 
-#saveRDS(dat, "maize_roots.RDS")
 ```
 
 ```{r}
@@ -127,31 +145,68 @@ colnames(dat[[1]])
 
 colnames(dat[[2]])
 
-
+view(pk_tab)
 ```
 
 Pre-processing data
 ```{r}
-matplot(dat_clean[[100]][,1], type="l")#plot to inspect the different chromatographs
+
+#this is just a visualization of what the pre-processing setp does to a chromatogram
+
+matplot(dat[[100]][,1], type="l")#plot to inspect the different chromatographs
 
 i=2 # chromatogram number in list of data
-tpoints <- as.numeric(rownames(dat_clean[[i]]))
+tpoints <- as.numeric(rownames(dat[[i]]))
 lambda='200.0'
  
-matplot(x=tpoints, y=dat_clean[[i]][,lambda], type='l', ylab='Abs (mAU)', xlab='Time (min)')
+matplot(x=tpoints, y=dat[[i]][,lambda], type='l', ylab='Abs (mAU)', xlab='Time (min)')
 
-matplot(x=tpoints, y = ptw::baseline.corr(dat_clean[[i]][,lambda],p=.001,lambda=1e5), type='l', add = T, col='blue', lty = 3)
-
+matplot(x=tpoints, y = ptw::baseline.corr(dat[[i]][,lambda],p=.001,lambda=1e5), type='l', add = T, col='blue', lty = 3)
+##
 
 # choose dimensions for interpolation
 new.ts <- seq(1,59.9,by=.01) # choose time-points
 new.lambdas <- seq(200, 398, by = 2) # choose wavelengths
 
-rm <- which(sapply(dat_clean, function(x) dim(x)[[1]]) <8990) #excluding Ethans data
+#Excluding from the data set some chromatograms based on the <8990 argument
+#rm <- which(sapply(dat, function(x) dim(x)[[1]]) <8990) #excluding Ethans data
 
-dat.pr <- preprocess(dat_clean[-rm], dim1=new.ts, dim2=new.lambdas, parallel=F, p=.001, lambda=1e5)
+#dat.pr <- preprocess(dat_clean[-rm], dim1=new.ts, dim2=new.lambdas, parallel=F, p=.001, lambda=1e5)
 
-#saveRDS(dat.pr, "maize_dat.pr.RDS") #saving an rds file for the pre-processed data
+
+dat.pr <- preprocess(dat, dim1=new.ts, dim2=new.lambdas, parallel=F, p=.001, lambda=1e5)
+
+#saveRDS(dat.pr, "maize_chemistry.pr.RDS") #saving an rds file for the pre-processed data
+
+######################### subset analysis #############################################
+matplot(dat_leaf[[6]][,1], type="l")#plot to inspect the different chromatographs
+
+i=2 # chromatogram number in list of data
+tpoints <- as.numeric(rownames(dat_leaf[[i]]))
+lambda='200.0'
+ 
+matplot(x=tpoints, y=dat_leaf[[i]][,lambda], type='l', ylab='Abs (mAU)', xlab='Time (min)')
+
+matplot(x=tpoints, y = ptw::baseline.corr(dat_leaf[[i]][,lambda],p=.001,lambda=1e5), type='l', add = T, col='blue', lty = 3)
+##
+
+# choose dimensions for interpolation
+new.ts <- seq(1,59.9,by=.01) # choose time-points
+new.lambdas <- seq(200, 398, by = 2) # choose wavelengths
+
+#Excluding from the data set some chromatograms based on the <8990 argument
+#rm <- which(sapply(dat, function(x) dim(x)[[1]]) <8990) #excluding Ethans data
+
+#dat.pr <- preprocess(dat_clean[-rm], dim1=new.ts, dim2=new.lambdas, parallel=F, p=.001, lambda=1e5)
+
+
+dat.pr.leaf <- preprocess(dat_leaf, dim1=new.ts, dim2=new.lambdas, parallel=F, p=.001, lambda=1e5)
+
+dat.pr.root <- preprocess(dat_roots, dim1=new.ts, dim2=new.lambdas, parallel=F, p=.001, lambda=1e5)
+
+#saving an rds file for the pre-processed data of both leafs and roots
+#saveRDS(dat.pr.leaf, "dat.pr.leaf.RDS") 
+#saveRDS(dat.pr.root, "dat.pr.root.RDS")
 ```
 
 Parametric time warping ()
@@ -159,8 +214,8 @@ Parametric time warping ()
 ```{r}
 
 ##################### Produce the models for time warping ###################
-readRDS()
-
+dat <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\maize_chemistry.pr.RDS")#read data that has been pre-processed and saved from previous steps.
+names(dat)
 #"qs package.skeleton" is another R package that saves qs files, which are similar to RDS and are available through the skeleton packages. 
 
 #parametric time warping, dont run this one, it was taking too long
@@ -171,7 +226,18 @@ warp <- correct_rt(chrom_list=dat.pr, models=warping.models, what="corrected.val
 #variable penalty dynamic time warping
 install.packages("VPdtw", repos="https://ethanbass.github.io/drat")
 
-warp.vpdtw <- correct_rt(chrom_list=dat.pr, alg="vpdtw", lambda="210", what="corrected.values")
+warp.vpdtw <- correct_rt(chrom_list=dat, alg="vpdtw", lambda="210", what="corrected.values")
+
+
+############### Subset analysis #########################################################
+dat_leaf <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\dat.pr.leaf.RDS")
+
+dat_root <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\dat.pr.root.RDS")
+
+#VPDTW algorithm
+warp.vpdtw.leaf <- correct_rt(chrom_list=dat_leaf, alg="vpdtw", lambda="210", what="corrected.values")
+
+warp.vpdtw.root <- correct_rt(chrom_list=dat_root, alg="vpdtw", lambda="210", what="corrected.values")
 
 ################# compare warped and unwarped chromatograms ########################
 
@@ -183,37 +249,79 @@ par(mar=c(1,1,1,1)) #allows you to plot the chromatograms without having a space
 
 plot.new() #Creates a new plot space in the plot
 
-ts <- as.numeric(rownames(warp.vpdtw[[i]])) #creates a new time series with the names of the rows of the 
+ts <- as.numeric(rownames(warp.vpdtw.leaf[[i]])) #creates a new time series with the names of the rows of the 
 
 plot.window(xlim=c(head(ts,1), tail(ts,1)),ylim=c(0,1000)) #sets up the world coordinate for a graphics window
 
-#
-for (i in 1:length(warp.vpdtw)){
-   matplot(ts, warp.vpdtw[[i]][,lambdas],type='l',add=T)
+#leaf
+for (i in 1:length(warp.vpdtw.leaf)){
+   matplot(ts, warp.vpdtw.leaf[[i]][,lambdas],type='l',add=T)
  }
 legend("topright", legend="vpdtw", bty = "n")
+
+
  
 plot.new()
 
-ts <- as.numeric(rownames(dat.pr[[i]]))
+ts <- as.numeric(rownames(dat_leaf[[i]]))
 plot.window(xlim=c(head(ts,1),tail(ts,1)),ylim=c(0,1000))
 
-for (i in 1:length(dat.pr)){
-   matplot(ts, dat.pr[[i]][,lambdas],type='l',add=T)
+for (i in 1:length(dat_leaf)){
+   matplot(ts, dat_leaf[[i]][,lambdas],type='l',add=T)
  }
 legend("topright", legend="raw", bty = "n")
 
+#root
+par(mfrow=c(2,1)) #breaks the plot windows into two separate
+
+lambdas=c('210','260') #new wavelengths? 
+
+par(mar=c(1,1,1,1)) #allows you to plot the chromatograms without having a space issue
+
+plot.new() #Creates a new plot space in the plot
+
+ts <- as.numeric(rownames(warp.vpdtw.root[[i]])) #creates a new time series with the names of the rows of the 
+
+plot.window(xlim=c(head(ts,1), tail(ts,1)),ylim=c(0,1000)) #sets up the world coordinate for a graphics window
+
+#leaf
+for (i in 1:length(warp.vpdtw.root)){
+   matplot(ts, warp.vpdtw.root[[i]][,lambdas],type='l',add=T)
+ }
+legend("topright", legend="vpdtw", bty = "n")
+
+
+ 
+plot.new()
+
+ts <- as.numeric(rownames(dat_root[[i]]))
+plot.window(xlim=c(head(ts,1),tail(ts,1)),ylim=c(0,1000))
+
+for (i in 1:length(dat_root)){
+   matplot(ts, dat_root[[i]][,lambdas],type='l',add=T)
+ }
+legend("topright", legend="raw", bty = "n")
+
+
+#saveRDS(warp.vpdtw.leaf, "warp.vpdtw.leaf.RDS") 
+#saveRDS(warp.vpdtw.root, "warp.vpdtw.root.RDS")
 ```
 
 
 Peak finding
 
 ```{r}
-pks_gauss <- get_peaks(warp.vpdtw, lambdas = c('210','260'), sd.max=40, fit="gaussian")
+#pks_gauss <- get_peaks(warp.vpdtw, lambdas = c('210','260'), sd.max=40, fit="gaussian")
 
-pks_egh <- get_peaks(warp.vpdtw, lambdas = c('210', '260'), sd.max=40, fit="egh")
+pks_egh_leaf <- get_peaks(warp.vpdtw.leaf, lambdas = c('210', '260'), sd.max=40, fit="egh")
 
-#produced a nested list of peaks by looping through the supplied chromatograms. 
+pks_egh_root <- get_peaks(warp.vpdtw.root, lambdas = c('210', '260'), sd.max=40, fit="egh")
+
+#produced a nested list of peaks by looping through the supplied chromatograms
+
+saveRDS(pks_egh_leaf, "pks_egh_leaf.RDS") 
+saveRDS(pks_egh_root, "pks_egh_root.RDS")
+
 ```
 
 
@@ -221,17 +329,149 @@ Peak fitting
 ```{r}
 par(mfrow=c(2,1))
 
-plot(pks_gauss, index=1, lambda='210')
+#plot(pks_gauss, index=1, lambda='210')
 
-plot(pks_egh, index=1, lambda='210')
+plot(pks_egh_leaf, index=1, lambda='210')
 
+plot(pks_egh_root, index=1, lambda='210')
 ```
 
 Peak table assembly
 ```{r}
+#pks.egh <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\maize_chemistry.pks_egh.RDS")
 
-pk_tab <- get_peaktable(pks_egh, response = "area")
+pk_tab_leaf <- get_peaktable(pks_egh_leaf, response = "area")
 
+pk_tab_root <- get_peaktable(pks_egh_root, response = "area")
+
+head(pk_tab_leaf$tab[,1:6])
+
+head(pk_tab_root$tab[,1:6])
+
+saveRDS(pk_tab_leaf, "pk_tab_leaf.RDS")
+saveRDS(pk_tab_root, "pk_tab_root.RDS")
+```
+
+Attaching metadata
+```{r}
+pk_tab_leaf <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\pk_tab_leaf.RDS")
+
+pk_tab_root <- readRDS("C:\\Users\\juanp\\Documents\\Github\\first_year_project\\pk_tab_root.RDS")
+#use the extractions data set that is already in tidy format. 
+
+#Keeping just the vial number
+
+rownames(pk_tab_leaf$tab) <- str_split_fixed(rownames(pk_tab_leaf$tab), "_", 3)[,3]
+
+rownames(pk_tab_root$tab) <- str_split_fixed(rownames(pk_tab_root$tab), "_", 3)[,3]
+
+#gsub("MAIZE_ROOTS_", "", rownames(peak_table$tab))
+
+tail(rownames(pk_tab_leaf[[1]]))
+
+View(pk_tab_leaf)
+
+#
+
+rownames(pk_tab_leaf$tab)
+
+pk_tab_leaf_meta$sample_meta
+
+extractions_df <- as.data.frame()
+
+pk_tab_leaf_meta <- attach_metadata(peak_table = pk_tab_leaf, metadata = as.data.frame(leaf), column="vial_label")#fixes the na's when attaching 
+
+
+pk_tab_root_meta <- attach_metadata(peak_table = pk_tab_root, metadata = as.data.frame(root), column="vial_label")
+
+pk_tab_leaf_meta$sample_meta #check that the metadata was attached correclty
+
+#normalizing the data by weight
+pk_tab_leaf_norm <- normalize_data(peak_table = pk_tab_leaf_meta, column="Initial weight_(g)")
+
+pk_tab_root_norm <- normalize_data(peak_table = pk_tab_root_meta, column="Initial weight_(g)")
+
+pk_tab_leaf_meta$sample_meta
+
+#Deleting the name so that only sample id can be found
+names(pk_tab_leaf_meta$sample_meta)
+
+```
+
+Producing the nmds
+```{r}
+library(vegan)
+par(mfrow= c(1,1))
+
+ordination_leaf <- as.matrix(pk_tab_leaf_meta)
+view(ordination_leaf)
+
+nmds_leaf <- metaMDS(pk_tab_leaf_norm$tab, distance = "bray")
+
+nmds_root <- metaMDS(pk_tab_root_norm$tab, distance = "bray")
+
+plot(nmds_leaf)
+
+plot(nmds_root)
+
+nmds_leaf$data
+
+m <- adonis(wisconsin(pk_tab_leaf_norm$tab) ~ treatment, data=pk_tab_leaf_norm$sample_meta)
+
+m <- adonis2(pk_tab_leaf_norm$tab ~ treatment*experiment, data=pk_tab_leaf_norm$sample_meta)
+
+m
+
+rm <- which(is.na(pk_tab_root_meta$sample_meta$treatment)) 
+m <- adonis2(pk_tab_root_meta$tab[-rm,] ~ treatment*experiment, data=pk_tab_root_meta$sample_meta[-rm,])
+m
+
+
+# make a list of colors to use
+colvec <- c("red", "blue", "grey", "black", "purple")
+# make a list of point shapes to use
+pchvec <- c(6,17,18, 15, 1)
+
+#Plotin the leafs
+pk_tab_leaf_meta$sample_norm$treatment <- as.factor(pk_tab_leaf_norm$sample_meta$treatment)
+plot(nmds_leaf, type = "n", xlim = c(- 1, 1.5))
+points(nmds_leaf, display = "sites", col = colvec[pk_tab_leaf_norm$sample_meta$treatment],
+       pch = pchvec[pk_tab_leaf_norm$sample_meta$treatment],cex=1, bg = colvec[pk_tab_leaf_norm$sample_meta$treatment])
+legend(-1.5, -0.5, legend=levels(pk_tab_leaf_meta$sample_meta$treatment), col=colvec, pch=pchvec, pt.bg=colvec, cex=1)
+#connect points to group centroid
+ordispider(nmds_leaf, groups=pk_tab_leaf_meta$sample_meta$treatment,  col = colvec )
+
+#Plotting the roots
+pk_tab_root_meta$sample_meta$treatment <- as.factor(pk_tab_root_meta$sample_meta$treatment)
+plot(nmds_root, type = "n", xlim = c(- 1, .5))
+points(nmds_root, display = "sites", col = colvec[pk_tab_root_meta$sample_meta$treatment],
+       pch = pchvec[pk_tab_root_meta$sample_meta$treatment],cex=1, bg = colvec[pk_tab_root_meta$sample_meta$treatment])
+legend(-1, -0.5, legend=levels(pk_tab_root_meta$sample_meta$treatment), col=colvec, pch=pchvec, pt.bg=colvec, cex=0.6)
+#connect points to group centroid
+ordispider(nmds_leaf, groups=pk_tab_leaf_meta$sample_meta$treatment,  col = colvec )
+
+
+###Trying to plot it better
+plot <- plot_ordination(pseffnorm,ord.PCoA.bray,color = "Herbivory", shape = "Treatment", axes=c(1,2)) +
+ geom_point(size=4, stroke = 1.5)+
+ scale_colour_manual(values=c('darkcyan','firebrick', 'gray30'))+
+ scale_shape_manual(values=c(0, 1, 2, 15,16,17))+
+ theme_bw(base_size = 15)
+plot$layers <- plot$layers[-1]
+plot
+
+
+#ggsave("Figures/ITS_PCA.pdf")
+plot_ordination(title = "PCA ITS colored by Herbivory",pseffnorm,ord.PCoA.bray,color = "Herbivory")+scale_colour_viridis_d(direction = -1)+ geom_point(size=4)
+plot_ordination(pseffnorm,ord.PCoA.bray,color = "Treatment")+scale_colour_viridis_d(direction = -1)+stat_ellipse(size=1)+ geom_point(size=1)
+stress <- nmds$stress
+
+scores(nmds) %>%
+  as_tibble(rownames = "samples") %>%
+  inner_join(., sample_lookup, by="samples") %>%
+  mutate(period = if_else(day < 10, 'early', 'late')) %>%
+  ggplot(aes(x=NMDS1, y=NMDS2, color=period)) +
+  geom_point()
 ```
 
 #this are random chuncks of code that were generated when attempting to trouble shoot
@@ -241,6 +481,16 @@ add cargo to path before using entab parser
 old_path <- Sys.getenv("PATH")
 Sys.setenv(PATH = paste(old_path, "C:\\Users\\juanp\\.cargo\\bin", sep = ";"))
 
+(!is.list(X) | mean(sapply(X, is.matrix)) != 1)
+mean(sapply(dat, is.matrix)) != 1
+any(!sapply(dat, is.matrix))
+which(!sapply(dat, is.matrix))
+is.matrix(dat[[99]])
+class(dat[[99]])
+
+extractions$vial_label %in% rownames(pk_tab_leaf$tab)
+extractions$vial_label <- as.character(extractions$vial_label)
+
 ```
 
 ```{r}
@@ -248,3 +498,5 @@ Sys.setenv(PATH = paste(old_path, "C:\\Users\\juanp\\.cargo\\bin", sep = ";"))
 remotes::install_github("bovee/entab",subdir = "entab-r")
 
 ```
+
+
